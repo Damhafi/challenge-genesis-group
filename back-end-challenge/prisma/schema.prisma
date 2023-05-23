@@ -1,0 +1,119 @@
+// mySQL planetScale
+// Desenvolver um sistema gerenciamento de orçamentos de produtos de informática. 
+// O sistema será gerenciado por dois perfis de usuários: COMPRADOR e GERENTE. 
+// O Comprador será responsável pelo cadastro dos orçamentos, deverá fazer sempre a cotação de três fornecedores para cada item. 
+// O Gerente é responsável pela aprovação dos orçamentos.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider     = "mysql"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
+}
+
+model Produto {
+  id        String @id @default(cuid())
+  nome      String
+
+  cotacoes  Cotacao[]
+  Orcamento Orcamento[] @relation("OrcamentoProduto")
+}
+
+model Fornecedor {
+  id       String  @id @default(cuid())
+  nome     String
+  email    String?
+  telefone String?
+  endereco String?
+
+  cotacoes Cotacao[] @relation("FornecedorCotacao")
+}
+
+model Cotacao {
+  id    String @id @default(cuid())
+  preco Float
+
+  produtoId String
+  produto   Produto @relation(fields: [produtoId], references: [id])
+
+  fornecedorId String
+  fornecedor   Fornecedor @relation("FornecedorCotacao", fields: [fornecedorId], references: [id])
+
+  orcamentos OrcamentoCotacao[] @relation("OrcamentoCotacao1")
+}
+
+model Orcamento {
+  id        String   @id @default(cuid())
+  item      String
+  aprovado  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  gerenteId String
+  gerente   User   @relation("OrcamentoGerente", fields: [gerenteId], references: [id])
+
+  compradorId String
+  comprador   User   @relation("OrcamentoComprador", fields: [compradorId], references: [id])
+
+  produtoId String
+  produto   Produto @relation("OrcamentoProduto", fields: [produtoId], references: [id])
+
+  cotacoes OrcamentoCotacao[] @relation("OracmentoCotacao2")
+}
+
+model OrcamentoCotacao {
+  id String @id @default(cuid())
+
+  orcamentoId String
+  orcamento   Orcamento @relation("OracmentoCotacao2", fields: [orcamentoId], references: [id])
+
+  cotacaoId String
+  cotacao   Cotacao @relation("OrcamentoCotacao1", fields: [cotacaoId], references: [id])
+}
+
+model User {
+  id           String  @id @default(cuid())
+  name         String?
+  email        String? @unique
+  passwordHash String
+
+  accountType AccountType
+
+  image             String?
+  sessions          Session[]
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+  orcamentos        Orcamento[] @relation("OrcamentoComprador")
+  orcamentosGeridos Orcamento[] @relation("OrcamentoGerente")
+
+  @@map("user")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("session")
+}
+
+model VerificationToken {
+  id         Int      @id @default(autoincrement())
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_token")
+}
+
+enum AccountType {
+  COMPRADOR
+  GERENTE
+}
