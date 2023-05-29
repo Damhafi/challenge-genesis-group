@@ -14,6 +14,8 @@ const MyApp = ({ Component, pageProps: { session, ...pageProps } }: Props) => {
         ? React.Fragment
         : BaseLayoutComponent
 
+
+
     return (
         <>
             <Head>

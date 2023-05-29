@@ -30,18 +30,8 @@ export default NextAuth({
 
                     console.log(res.data)
 
-                    // const dCoded = JWT.verify(res.data.token, 'hJ#1$89nka!pQl2M#3$5@R')
-                    // if (typeof dCoded !== 'object'){
-                    //     return null
-                    // }
+                    return res.data.user
 
-                    return {
-                        name: res.data.user.name,
-                        email: res.data.user.email,
-                        userId: res.data.user.id,
-                        accountType: res.data.user.accountType,
-                        image: res.data.user.image,
-                    }
                 } catch (e) {
                     console.log(e)
                     return null
@@ -52,35 +42,28 @@ export default NextAuth({
     callbacks: {
         async jwt({ token, user, account }) {
             if (account && account.type === 'credentials' && user) {
-                token.accessToken = user.accessToken
+                token.name = user.name
+                token.image = user.image
+                token.accountType = user.accountType
             }
-
-            token.accountType = user?.accountType
 
             return token
         },
+        // SESSAO
         async session({ session, token }) {
-            if (token && token.accessToken) {
-                session.accessToken = token.accessToken
+            if (token) {
+                session.user.name = token.name
+                session.user.image = token.image
+                session.user.accountType = token.accountType
             }
-
-            session.accountType = token?.accountType
 
             return session
         }
     },
     jwt: {
-        secret: 'hJ#1$89nka!pQl2M#3$5@R'
+        maxAge: 30 * 24 * 60 * 60,
     },
     pages: {
-        signIn: '/auth/signin'
+        signIn: '/auth/signin',
     }
 })
-
-// if (credentials === undefined)
-//     throw new Error('Empty credentials')
-
-// return {
-//     name: credentials.email,
-//     email: credentials.email,
-// }

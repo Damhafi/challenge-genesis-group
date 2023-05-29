@@ -10,7 +10,7 @@ const navigation = [{ name: 'Orçamentos', href: '/orcamentos' }]
 const Header = (props: Props) => {
     const { data: session, status } = useSession()
 
-    console.log(session)
+    console.log('session', session)
 
     return (
         <header className="bg-indigo-600 w-full">
