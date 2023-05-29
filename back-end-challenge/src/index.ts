@@ -1,15 +1,12 @@
 import express from "express";
 import { PrismaClient } from "@prisma/client";
 import cors from "cors";
-import bcrypt from "bcrypt";
 import { SHA256 } from "crypto-js";
 
 const prisma = new PrismaClient();
 
 const app = express();
 const port = process.env.PORT || 3003;
-
-const jwt = require("jsonwebtoken");
 
 app.use(cors());
 app.use(express.json());

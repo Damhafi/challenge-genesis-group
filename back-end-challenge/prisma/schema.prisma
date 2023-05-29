@@ -42,7 +42,8 @@ model Cotacao {
   fornecedorId String
   fornecedor   Fornecedor @relation("FornecedorCotacao", fields: [fornecedorId], references: [id])
 
-  orcamentos OrcamentoCotacao[] @relation("OrcamentoCotacao1")
+  OrcamentoCotacao   OrcamentoCotacao? @relation(fields: [IdOrcamentoCotacao], references: [id])
+  IdOrcamentoCotacao String
 }
 
 model Orcamento {
@@ -70,8 +71,7 @@ model OrcamentoCotacao {
   orcamentoId String
   orcamento   Orcamento @relation("OracmentoCotacao2", fields: [orcamentoId], references: [id])
 
-  cotacaoId String
-  cotacao   Cotacao @relation("OrcamentoCotacao1", fields: [cotacaoId], references: [id])
+  cotacoes Cotacao[]
 }
 
 model User {
