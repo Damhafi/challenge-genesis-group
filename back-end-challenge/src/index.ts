@@ -21,9 +21,6 @@ app.get("/produtos", async (req, res) => {
   res.json(produtos);
 });
 
-
-
-
 // Autenticação de usuários
 app.post("/login", async (req, res) => {
   const { email, password } = req.body;
@@ -41,18 +38,7 @@ app.post("/login", async (req, res) => {
       return res.status(401).json({ message: "Credenciais inválidas" });
     }
 
-    const token = jwt.sign(
-      {
-        userId: user.id,
-        email: user.email,
-        name: user.name,
-        accountType: user.accountType,
-        image: user.image,
-      },
-      "hJ#1$89nka!pQl2M#3$5@R"
-    );
-
-    return res.status(200).json({ token, user });
+    return res.status(200).json({ user });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: "Erro interno do servidor" });
