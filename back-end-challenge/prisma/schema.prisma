@@ -14,6 +14,11 @@ datasource db {
   relationMode = "prisma"
 }
 
+enum AccountType {
+  COMPRADOR
+  GERENTE
+}
+
 model Produto {
   id   String @id @default(cuid())
   nome String
@@ -111,9 +116,4 @@ model VerificationToken {
 
   @@unique([identifier, token])
   @@map("verification_token")
-}
-
-enum AccountType {
-  COMPRADOR
-  GERENTE
 }

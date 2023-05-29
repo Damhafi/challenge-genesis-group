@@ -2,6 +2,7 @@ import { Prisma, PrismaClient, AccountType } from "@prisma/client";
 import { faker } from "@faker-js/faker";
 import { SHA256 } from "crypto-js";
 import { Fornecedor, Product } from "./types";
+import { parse } from "path";
 
 const prisma = new PrismaClient();
 
@@ -22,10 +23,6 @@ async function seed() {
     });
   }
 
-  await prisma.user.createMany({
-    data: users,
-  });
-
   console.log("Usuários populados com sucesso!");
 
   // CREATE MANY PRODUCTS
@@ -40,7 +37,7 @@ async function seed() {
 
   // CREATE MANY FORNECEDORES (THAT HAVE PRODUCTS)
   const fornecedores: Fornecedor[] = [];
-  const numFornecedores = 10;
+  const numFornecedores = 0;
 
   for (let i = 0; i < numFornecedores; i++) {
     fornecedores.push({
@@ -51,20 +48,125 @@ async function seed() {
     });
   }
 
-  
-
   try {
-    // await prisma.produto.createMany({
-    //   data: products,
-    // });
-    // console.log("Produtos populados com sucesso!");
+    // POPULATE DATABASE - USERS
+    await prisma.user.createMany({
+      data: users,
+    });
+    console.log("Usuários populados com sucesso!");
 
+    // POPULATE DATABASE - PRODUCTS
+    await prisma.produto.createMany({
+      data: products,
+    });
+    console.log("Produtos populados com sucesso!");
+
+    // POPULATE DATABASE - FORNECEDORES
     await prisma.fornecedor.createMany({
       data: fornecedores,
     });
-
     console.log("Fornecedores populados com sucesso!");
+
+    // POPULATE DATABASE - COTAÇÕES
+    const cotacoes: Prisma.CotacaoCreateManyInput[] = [];
+    const numCotacoes = 10;
+
+    for (let i = 0; i < numCotacoes; i++) {
+      const produto = await prisma.produto.findFirst({
+        skip: Math.floor(Math.random() * numProducts),
+        orderBy: { id: "asc" },
+      });
+
+      const fornecedor = await prisma.fornecedor.findFirst({
+        skip: Math.floor(Math.random() * numFornecedores),
+        orderBy: { id: "asc" },
+      });
+
+      if (produto && fornecedor) {
+        cotacoes.push({
+          produtoId: produto.id,
+          fornecedorId: fornecedor.id,
+          preco: parseFloat(faker.commerce.price()),
+          IdOrcamentoCotacao: (Math.floor(Math.random() * 11)).toString(),
+        });
+      }
+    }
+
+    await prisma.cotacao.createMany({
+      data: cotacoes,
+    });
+    console.log("Cotações populadas com sucesso!");
+
+
+    // CREATE ORCAMENTOS
+    const orcamentos: Prisma.OrcamentoCreateManyInput[] = [];
+    const numOrcamentos = 10;
+
+    for (let i = 0; i < numOrcamentos; i++) {
+      const gerente = await prisma.user.findFirst({
+        where: { accountType: AccountType.GERENTE },
+        skip: Math.floor(Math.random() * numUsers),
+        orderBy: { id: "asc" },
+      });
+
+      const comprador = await prisma.user.findFirst({
+        where: { accountType: AccountType.COMPRADOR },
+        skip: Math.floor(Math.random() * numUsers),
+        orderBy: { id: "asc" },
+      });
+
+      const produto = await prisma.produto.findFirst({
+        skip: Math.floor(Math.random() * 3),
+        orderBy: { id: "asc" },
+      });
+
+      if (gerente && comprador && produto) {
+        orcamentos.push({
+          item: produto.nome,
+          aprovado: faker.datatype.boolean(),
+          gerenteId: gerente.id,
+          compradorId: comprador.id,
+          produtoId: produto.id,
+        });
+      }
+    }
+
+    await prisma.orcamento.createMany({
+      data: orcamentos,
+    });
+    console.log('Orçamentos populados com sucesso!');
+
+
+    // CREATE MANY ORÇAMENTO-COTAÇÕES
+    const orcamentoCotacoes: Prisma.OrcamentoCotacaoCreateManyInput[] = [];
+    const numOrcamentoCotacoes = 10;
+
+    for (let i = 0; i < numOrcamentoCotacoes; i++) {
+      const orcamento = await prisma.orcamento.findFirst({
+        skip: Math.floor(Math.random() * numOrcamentos),
+        orderBy: { id: "asc" },
+      });
     
+      const cotacao = await prisma.cotacao.findFirst({
+        skip: Math.floor(Math.random() * numCotacoes),
+        orderBy: { id: "asc" },
+      });
+    
+      if (orcamento && cotacao) {
+        await prisma.orcamentoCotacao.create({
+          data: {
+            orcamentoId: orcamento.id,
+            cotacoes: { connect: { id: cotacao.id } },
+          },
+        });
+      }
+    }
+
+    await prisma.orcamentoCotacao.createMany({
+      data: orcamentoCotacoes,
+    });
+    console.log('Orçamento-Cotações populados com sucesso!');
+
   } catch (err) {
     console.log(err);
   }
