@@ -27,7 +27,7 @@ async function seed() {
 
   // CREATE MANY PRODUCTS
   const products: Product[] = [];
-  const numProducts: number = 0;
+  const numProducts: number = 5;
 
   for (let i = 0; i < numProducts; i++) {
     products.push({
@@ -37,7 +37,7 @@ async function seed() {
 
   // CREATE MANY FORNECEDORES (THAT HAVE PRODUCTS)
   const fornecedores: Fornecedor[] = [];
-  const numFornecedores = 0;
+  const numFornecedores = 5;
 
   for (let i = 0; i < numFornecedores; i++) {
     fornecedores.push({
