@@ -18,7 +18,7 @@ app.get("/produtos", async (req, res) => {
   res.json(produtos);
 });
 
-// Autenticação de usuários
+
 app.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
