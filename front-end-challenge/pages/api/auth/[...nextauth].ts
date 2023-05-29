@@ -28,12 +28,12 @@ export default NextAuth({
                         password: credentials.password
                     })
 
-                    console.log(res.data)
+
 
                     return res.data.user
 
                 } catch (e) {
-                    console.log(e)
+
                     return null
                 }
             },
