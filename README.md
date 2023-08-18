@@ -23,12 +23,6 @@ Certifique-se de ter o MySQL instalado e configurado corretamente antes de execu
 
 ## Funcionalidades
 
-O sistema possui as seguintes funcionalidades:
-
-- [Funcionalidade 1]
-- [Funcionalidade 2]
-- [Funcionalidade 3]
-
 ## Contribuição
 
 Se desejar contribuir para este projeto, siga as etapas abaixo:
@@ -45,6 +39,6 @@ Este projeto está licenciado sob [Nome da Licença]. Consulte o arquivo LICENSE
 
 ## Contato
 
-Se tiver alguma dúvida ou sugestão, entre em contato através do email [seu-email@exemplo.com].
+Se tiver alguma dúvida ou sugestão, entre em contato através do email [xxxx@gmail.com].
 
 Obrigado e aproveite o sistema Full Stack!
